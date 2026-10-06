@@ -29,9 +29,14 @@ The CSVs are Windows-1252, not UTF-8; the manifest records this.
 UNdata's terms of use (<https://data.un.org/Host.aspx?Content=UNdataUse>)
 allow the data to be "copied freely, duplicated and further distributed
 provided that UNdata is cited as the reference"; they do not mention
-commercial use. Every row names its originating agency in a Source column,
-and some agencies' own terms are stricter (ITU, WHO, UN Comtrade, IMF); see
-`data/README.md` and `data/LICENSE`.
+commercial use, and they do not speak for the agencies the values come
+from. Every row names its originating agency in a Source column, so the
+export publishes a row only when that agency's own terms allow
+redistribution, commercial use included. `SOURCES` in
+`scripts/03_export_parquet.py` maps each Source to its agency, the decision
+and the reason with the URL of the terms; a Source it does not know is left
+out until its agency's terms are checked and added there. See
+`data/README.md` and `data/LICENSE` for the agencies and their terms.
 
 ## How to run
 
@@ -59,17 +64,23 @@ every run.
 `03_export_parquet.py` writes one Parquet per table and edition,
 `data/parquet/<edition>/<table>_<title>.parquet`, plus
 `data/parquet/tables.parquet` (one row per table) and
-`data/parquet/sources.parquet` (rows per Source value per table). Column
+`data/parquet/sources.parquet` (rows per Source value per table, with the
+agency, decision and reason). Rows whose Source is not published are left
+out, and a table with none left gets no Parquet. UN Comtrade's FAQ allows
+fewer than 100,000 Comtrade records without a distribution licence, so the
+export stops if the published Comtrade rows reach that. Column
 types come from the column names (see the script's docstring); a value that
 does not fit its type stops the run.
 
 `02_verify.py` re-hashes every raw file, reads every CSV with the csv
-module, and compares every cell of every Parquet with it.
+module, and compares every cell of every Parquet with its published
+records.
 
 `publish.py` refuses to run if the dataset card `data/README.md` does not
-declare every Parquet file as a subset, or a raw file's sha256 differs from
-its manifest. It uploads `data/README.md`, `data/LICENSE`,
-`data/provenance.yaml`, `data/parquet/**` and the raw files unchanged.
+declare every Parquet file as a subset, declares one that has no Parquet, or
+a raw file's sha256 differs from its manifest. It uploads `data/README.md`,
+`data/LICENSE`, `data/provenance.yaml`, `data/parquet/**`, the manifests,
+and unchanged only the raw CSVs of tables whose every row is published.
 
 ## Layout
 
