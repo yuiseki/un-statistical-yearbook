@@ -215,6 +215,20 @@ AMA = ("United Nations Statistics Division, New York, National Accounts Statisti
         ("World Health Organisation (WHO), Geneva, WHO Global Health Workforce", "WHO", False),
         ("International Monetary Fund (IMF), Washington, D.C., Balance of Payment", "IMF", False),
         ("Food and Agriculture Organization of the United Nations (FAO), Rome", "FAO", True),
+        ("United Nations Educational, Scientific and Cultural Organization (UNESCO), Montreal, "
+         "the UNESCO Institute for Statistics (UIS) statistics database", "UIS", True),
+        ("World Tourism Organization (UNWTO), Madrid, the UNWTO Statistics Database", "UN Tourism",
+         False),
+        ("World Intellectual Property Organization (WIPO), Geneva, WIPO statistics database",
+         "WIPO", False),
+        ("Inter-Parliamentary Union (IPU), Geneva, the database on Women in National Parliament",
+         "IPU", False),
+        ("United Nations Office on Drugs and Crime (UNODC), Vienna, UNODC Statistics database",
+         "UNODC", False),
+        ("World Conservation Union (IUCN), Gland and Cambridge, IUCN Red List of Threatened "
+         "Species publication", "IUCN", False),
+        ("United Nations Environment Programme (UNEP) World Conservation Monitoring Centre (WCMC) "
+         "and World Conservation Union (IUCN) and BirdLife International", "UNEP-WCMC", False),
     ],
 )
 def test_source_status_names_the_agency_and_whether_its_rows_are_published(

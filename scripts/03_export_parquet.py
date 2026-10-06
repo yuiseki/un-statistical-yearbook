@@ -90,6 +90,29 @@ SOURCES = [
      "World Population and Urbanization Prospects are CC BY 3.0 IGO"),
     (r"^United Nations Statistics Division", "UNSD", True,
      "UNSD's own data under the UNdata terms of use"),
+    (r"^United Nations Environment Programme \(UNEP\) World Conservation Monitoring Centre",
+     "UNEP-WCMC", False,
+     "The WDPA and the Key Biodiversity Areas data forbid commercial use of derived works, and "
+     "KBA needs written permission to redistribute them; "
+     "https://www.protectedplanet.net/en/legal https://www.keybiodiversityareas.org/termsofservice"),
+    (r"^World Conservation Union \(IUCN\)", "IUCN", False,
+     "The IUCN Red List needs prior written permission for commercial use and for "
+     "republishing or redistributing its data, derived works included; "
+     "https://www.iucnredlist.org/terms/terms-of-use"),
+    (r"^World Tourism Organization", "UN Tourism", False,
+     "UN Tourism content is for personal, non-commercial use, without any right to "
+     "redistribute it or create derivative works; https://www.untourism.int/copyright"),
+    (r"^World Intellectual Property Organization", "WIPO", False,
+     "WIPO's statistics terms forbid republishing or commercially re-selling its statistical "
+     "datasets; https://www.wipo.int/en/web/ip-statistics/about"),
+    (r"^Inter-Parliamentary Union", "IPU", False,
+     "IPU Parline data are CC BY-NC-SA 4.0 (non-commercial); https://www.ipu.org/terms-use"),
+    (r"^United Nations Office on Drugs and Crime", "UNODC", False,
+     "The UNODC data portal points to the UN terms of use: personal, non-commercial use "
+     "without any right to redistribute; https://www.un.org/en/about-us/copyright"),
+    (r"UNESCO Institute for Statistics", "UIS", True,
+     "UIS data are CC BY-SA 4.0 (share-alike); "
+     "https://databrowser.uis.unesco.org/terms-and-conditions"),
     (r"^Food and Agriculture Organization", "FAO", True, "FAOSTAT is CC BY 4.0"),
     (r"^International Labour Organization", "ILO", True, "ILOSTAT is CC BY 4.0"),
     (r"^Organisation for Economic Co-operation and Development", "OECD", True,
