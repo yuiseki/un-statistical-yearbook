@@ -45,3 +45,11 @@ def test_records_with_a_wrong_number_of_cells_fail(tmp_path):
 def test_a_csv_cell_is_read_as_the_parquet_should_hold_it(name, raw, want):
     got = m.typed(name, raw)
     assert got == want and type(got) is type(want)
+
+
+def test_only_records_of_published_sources_are_expected_in_the_parquet():
+    itu = "International Telecommunication Union (ITU), Geneva, the ITU database"
+    fao = "Food and Agriculture Organization of the United Nations (FAO), Rome"
+    records = [["4", "A", "2010", "s", "1", "", itu], ["4", "A", "2010", "s", "2", "", fao],
+               ["4", "A", "2010", "s", "3", "", ""]]  # fmt: skip
+    assert m.published_records(records) == [records[1]]

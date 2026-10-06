@@ -6,17 +6,19 @@ the encoding the manifest records, read to the end with the csv module, and
 every record (rows after the title and header rows) has as many cells as the
 header. Prints its record count.
 
-For each Parquet file scripts/03_export_parquet.py made, against its CSV
-read with the csv module:
-  - as many rows as the CSV has records, the column names column_names()
+For each Parquet file scripts/03_export_parquet.py made, against the records
+of its CSV, read with the csv module, whose Source export.source_status()
+publishes (a table with none must have no Parquet file):
+  - as many rows as those records, the column names column_names()
     gives for the CSV's header, in order, each of the type its name gives
   - every cell equal to the CSV's, row by row in order: text as text (an
     empty cell as NULL), area_code and year as Python's int reads them, value
     as Python's float reads it once its thousands separators are removed
   - a plain DuckDB with extension autoloading turned off opens it
   - no row group carries a bloom filter
-And tables.parquet has one row per CSV with its row count, sources.parquet
-the per-Source counts of the CSV.
+And tables.parquet has one row per CSV with its record count and published
+record count, sources.parquet the per-Source counts of the CSV with the
+agency and decision source_status() gives.
 
 Prints one ok/FAIL line per check and exits non-zero on any failure.
 
@@ -73,6 +75,11 @@ def typed(name: str, raw: str):
     return raw if raw != "" else None
 
 
+def published_records(records: list[list[str]]) -> list[list[str]]:
+    """The records whose Source the export publishes, in order."""
+    return [r for r in records if export.source_status(typed("source", r[-1]))[1]]
+
+
 def verify_parquet(edition: str, name: str, e: dict, header, records, tables, sources) -> int:
     import duckdb
 
@@ -86,6 +93,19 @@ def verify_parquet(edition: str, name: str, e: dict, header, records, tables, so
     stem = f"{e['table']}_{export.slug(e['title'])}"
     subset = f"{edition}.{stem}"
     p = PQ / edition / f"{stem}.parquet"
+    everything, records = records, published_records(records)
+    t = tables.get(subset)
+    check(t == (len(everything), len(records)),
+          f"{subset}: tables.parquet says {t} rows (all, published)")  # fmt: skip
+    want = collections.Counter(r[-1] for r in everything)
+    status = {s: export.source_status(typed("source", s)) for s in want}
+    got_sources = sources.get(subset, {})
+    check(got_sources == {s: (*status[s][:2], n) for s, n in want.items()},
+          f"{subset}: sources.parquet has the {len(want)} Source value(s), their agency, "
+          "decision and counts")  # fmt: skip
+    if not records:
+        check(not p.exists(), f"{subset}: no published rows and no Parquet file")
+        return failures
     if not p.exists():
         check(False, f"{subset}: {p} missing")
         return failures
@@ -121,10 +141,6 @@ def verify_parquet(edition: str, name: str, e: dict, header, records, tables, so
     ).fetchone()[0]
     check(bloom == 0, f"{subset}: no bloom filters")
 
-    check(tables.get(subset) == len(records), f"{subset}: tables.parquet says {tables.get(subset)} rows")
-    want = collections.Counter(r[-1] for r in records)
-    check(sources.get(subset) == dict(want),
-          f"{subset}: sources.parquet has the {len(want)} Source value(s) and their counts")  # fmt: skip
     return failures
 
 
@@ -169,10 +185,12 @@ def main() -> int:
         print("FAIL tables.parquet or sources.parquet missing; run scripts/03_export_parquet.py")
         return 1
     con = duckdb.connect()
-    tables = dict(con.sql(f"select subset, rows from '{tl}'").fetchall())
+    tables = {s: (n, k) for s, n, k in
+              con.sql(f"select subset, rows, rows_published from '{tl}'").fetchall()}  # fmt: skip
     sources: dict = collections.defaultdict(dict)
-    for subset, source, n in con.sql(f"select subset, source, rows from '{sl}'").fetchall():
-        sources[subset][source] = n
+    q = f"select subset, source, agency, published, rows from '{sl}'"
+    for subset, source, agency, published, n in con.sql(q).fetchall():
+        sources[subset][source or ""] = (agency, published, n)
     failures = total = files = 0
     for d in dirs:
         f, n = verify(d, tables, sources)
