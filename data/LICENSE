@@ -27,23 +27,34 @@ The terms name no licence, and say nothing about commercial use or about
 modification and derived works.
 
 Each row of each table has a Source column naming the agency its value
-comes from (for example the International Telecommunication Union for
-internet use). The terms above do not mention those agencies' rights, and
-an agency's own terms may be stricter than UNdata's: on 2026-10-06 the
-ITU's site terms limited use to personal, educational or non-commercial
-purposes, the WHO licensed its datasets for public health purposes, UN
-Comtrade allowed internal use only without UNSD's permission, and the IMF
-required permission for commercial use. Check the Source of the rows you
-use and that agency's terms. The dataset card (README.md) lists the
-Source values of every table with their row counts.
+comes from. The terms above speak for UNdata's website as a whole and do
+not mention those agencies' rights, so this dataset publishes a row only
+when its agency's own terms allow redistribution, commercial use included
+(read on 2026-10-06, not legal advice):
 
-Cite UNdata as the reference, and the source named in each row.
+  published   UNSD (the UNdata terms above); UN Population Division
+              (CC BY 3.0 IGO); UNESCO Institute for Statistics (CC BY-SA
+              4.0, share-alike); ILO, FAO and UNHCR (CC BY 4.0); OECD
+              (reuse with attribution); UN Comtrade (its FAQ allows a
+              database of fewer than 100,000 records, commercially too,
+              without a distribution licence; 8,536 here)
+  left out    WHO, ITU, IMF, IUCN, UNEP-WCMC, UNODC, UN Tourism, WIPO and
+              the IPU, whose terms limit use to non-commercial or public
+              health purposes or need permission to redistribute
+
+parquet/sources.parquet gives every Source value its agency, whether its
+rows are published, and the reason with the URL of the agency's terms;
+the dataset card (README.md) has the same as tables.
+
+Cite UNdata as the reference, and the source named in each row; for UIS
+rows, also the CC BY-SA 4.0 licence.
 
 This dataset is not made or endorsed by the United Nations.
 
-The files under raw/<edition>/ are UNSD's own, byte for byte; each
-edition's MANIFEST.json records their URLs, sizes, sha256 and
-Last-Modified.
+The files under raw/<edition>/ are UNSD's own, byte for byte, and only
+those of tables whose every row is published; each edition's
+MANIFEST.json records the URLs, sizes, sha256 and Last-Modified of all
+the files fetched, including those not uploaded.
 
 The Parquet under parquet/ was made from those CSVs:
 
@@ -55,7 +66,10 @@ The Parquet under parquet/ was made from those CSVs:
     area_code and year as integers, value as a floating-point number with
     its thousands separators removed, the rest as text; an empty text cell
     is NULL
-  - parquet/tables.parquet lists the tables and parquet/sources.parquet
-    counts the rows per Source value per table
+  - the rows of the agencies left out above were dropped; a table with no
+    row left has no Parquet file
+  - parquet/tables.parquet lists all the tables with their published and
+    excluded row counts, and parquet/sources.parquet counts the rows per
+    Source value per table with the agency, decision and reason
 
 No value was changed.
