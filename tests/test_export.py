@@ -209,7 +209,7 @@ AMA = ("United Nations Statistics Division, New York, National Accounts Statisti
     [
         (WPP, "UN Population Division", True),
         (AMA, "UNSD", True),
-        (COMTRADE, "UN Comtrade", False),
+        (COMTRADE, "UN Comtrade", True),
         (ITU, "ITU", False),
         (MATERNAL, "WHO", False),
         ("World Health Organisation (WHO), Geneva, WHO Global Health Workforce", "WHO", False),
@@ -265,3 +265,12 @@ def test_main_leaves_out_the_rows_and_tables_of_excluded_sources(tmp_path, monke
         "where table_number = 314"
     ).fetchall()
     assert s == [("ITU", False, 5)]
+
+
+def test_comtrade_rows_stay_under_the_limit_its_faq_allows(monkeypatch):
+    monkeypatch.setattr(m, "COMTRADE_LIMIT", 10)
+    sources = [("syb68", 123, "s", COMTRADE, *m.source_status(COMTRADE), 6),
+               ("syb68", 330, "s", COMTRADE, *m.source_status(COMTRADE), 4)]  # fmt: skip
+    with pytest.raises(SystemExit, match="UN Comtrade"):
+        m.check_comtrade_limit(sources)
+    m.check_comtrade_limit(sources[:1])

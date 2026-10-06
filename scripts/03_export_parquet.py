@@ -71,8 +71,9 @@ NUMBER_RE = PATTERNS["value"][0]
 # (pattern searched in Source, agency, published, reason); the first match wins,
 # so UN Comtrade comes before the rest of UNSD.
 SOURCES = [
-    (r"UN COMTRADE", "UN Comtrade", False,
-     "UN Comtrade: re-dissemination is limited and may need a distribution licence; "
+    (r"UN COMTRADE", "UN Comtrade", True,
+     "UN Comtrade lets a database of fewer than 100,000 records in total be re-disseminated, "
+     "commercially too, without a distribution licence; "
      "https://uncomtrade.org/docs/faqs-on-use-and-re-dissemination/"),
     (r"World Health Organi[sz]ation", "WHO", False,
      "WHO datasets are licensed for public health purposes only, and any other alteration "
@@ -96,6 +97,19 @@ SOURCES = [
     (r"^United Nations High Commissioner for Refugees", "UNHCR", True,
      "UNHCR population statistics are CC BY 4.0"),
 ]  # fmt: skip
+
+
+# UN Comtrade's FAQ allows re-dissemination without a licence only while the
+# whole database holds fewer than this many Comtrade records.
+COMTRADE_LIMIT = 100_000
+
+
+def check_comtrade_limit(sources: list[tuple]) -> None:
+    """Stop when the published UN Comtrade rows of all tables and editions reach the limit."""
+    n = sum(r[-1] for r in sources if r[4] == "UN Comtrade" and r[5])
+    if n >= COMTRADE_LIMIT:
+        raise SystemExit(f"{n:,} published UN Comtrade rows; its FAQ allows fewer than "
+                         f"{COMTRADE_LIMIT:,} without a distribution licence")  # fmt: skip
 
 
 def source_status(source: str | None) -> tuple[str, bool, str]:
@@ -187,6 +201,8 @@ def main() -> int:
     manifests = sorted(RAW.glob("*/MANIFEST.json"))
     if not manifests:
         raise SystemExit("no data/raw/<edition>/MANIFEST.json")
+    # a run that stops leaves no table list, and publishing refuses to go without one
+    (OUT / "tables.parquet").unlink(missing_ok=True)
     tables, sources = [], []
     for mpath in manifests:
         edition = mpath.parent.name
@@ -230,6 +246,7 @@ def main() -> int:
                   flush=True)  # fmt: skip
         work.rmdir()
 
+    check_comtrade_limit(sources)
     con.execute(
         "create table tables (edition varchar, table_number integer, subset varchar, "
         "parquet varchar, raw varchar, table_code varchar, title varchar, page_label varchar, "
