@@ -149,8 +149,13 @@ def test_value_regex_accepts_only_plain_or_grouped_numbers():
 def test_main_writes_one_parquet_per_table_and_the_lists(tmp_path, monkeypatch):
     raw = tmp_path / "raw" / "syb68"
     raw.mkdir(parents=True)
+    # both fixtures come from agencies whose rows are not published (ITU, IMF),
+    # so their sources are rewritten to UNSD for this test
     for f in (IU, XR):
-        shutil.copy(f, raw / f.name)
+        data = f.read_bytes()
+        for agency in (b"International Telecommunication Union (ITU)", b"International Monetary Fund (IMF)"):
+            data = data.replace(agency, b"United Nations Statistics Division")
+        (raw / f.name).write_bytes(data)
     files = {
         IU.name: {"table": 314, "title": "Internet Usage", "label": "Internet usage",
                   "topic": "Communication", "page_updated": "22-Dec-2025", "month": "202511",
@@ -171,17 +176,92 @@ def test_main_writes_one_parquet_per_table_and_the_lists(tmp_path, monkeypatch):
     ]  # fmt: skip
     con = duckdb.connect()
     t = con.sql(
-        f"select edition, table_number, subset, table_code, title, rows, sources "
+        f"select edition, table_number, subset, table_code, title, rows, rows_published, sources "
         f"from '{out / 'tables.parquet'}' order by table_number"
     ).fetchall()
     assert t == [
-        ("syb68", 130, "syb68.130_exchange_rates", "T16", "Exchange rates", 3, 1),
-        ("syb68", 314, "syb68.314_internet_usage", "T30", "Internet Usage", 5, 1),
+        ("syb68", 130, "syb68.130_exchange_rates", "T16", "Exchange rates", 3, 3, 1),
+        ("syb68", 314, "syb68.314_internet_usage", "T30", "Internet Usage", 5, 5, 1),
     ]
-    s = con.sql(f"select subset, source, rows from '{out / 'sources.parquet'}'").fetchall()
-    assert ("syb68.314_internet_usage", ITU, 5) in s
+    s = con.sql(
+        f"select subset, agency, published, rows from '{out / 'sources.parquet'}'"
+    ).fetchall()
+    assert ("syb68.314_internet_usage", "UNSD", True, 5) in s
     bloom = con.sql(
         "select count(*) filter (where bloom_filter_offset is not null) "
         f"from parquet_metadata('{out / 'syb68' / '314_internet_usage.parquet'}')"
     ).fetchone()[0]
     assert bloom == 0
+
+COMTRADE = ("United Nations Statistics Division, New York, Commodity Trade Statistics Database "
+            "(UN COMTRADE), last accessed June 2025.")  # fmt: skip
+MATERNAL = ("World Health Organization (WHO), the United Nations Children's Fund (UNICEF), the "
+            "United Nations Population Fund (UNFPA), the World Bank and the United Nations "
+            "Population Division, Trends in Maternal Mortality")  # fmt: skip
+WPP = ("United Nations Population Division, New York, World Population Prospects: The 2024 "
+       "Revision, last accessed June 2025.")  # fmt: skip
+AMA = ("United Nations Statistics Division, New York, National Accounts Statistics: Analysis of "
+       "Main Aggregates (AMA) database, last accessed April 2025.")  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("source", "agency", "published"),
+    [
+        (WPP, "UN Population Division", True),
+        (AMA, "UNSD", True),
+        (COMTRADE, "UN Comtrade", False),
+        (ITU, "ITU", False),
+        (MATERNAL, "WHO", False),
+        ("World Health Organisation (WHO), Geneva, WHO Global Health Workforce", "WHO", False),
+        ("International Monetary Fund (IMF), Washington, D.C., Balance of Payment", "IMF", False),
+        ("Food and Agriculture Organization of the United Nations (FAO), Rome", "FAO", True),
+    ],
+)
+def test_source_status_names_the_agency_and_whether_its_rows_are_published(
+    source, agency, published
+):
+    got = m.source_status(source)
+    assert (got[0], got[1]) == (agency, published)
+    assert got[2]
+
+
+@pytest.mark.parametrize("source", [None, "", "Some Agency Nobody Checked, Geneva"])
+def test_a_source_whose_terms_were_not_checked_is_not_published(source):
+    agency, published, reason = m.source_status(source)
+    assert agency == "unchecked" and published is False and "not checked" in reason
+
+
+def test_main_leaves_out_the_rows_and_tables_of_excluded_sources(tmp_path, monkeypatch):
+    raw = tmp_path / "raw" / "syb68"
+    raw.mkdir(parents=True)
+    shutil.copy(IU, raw / IU.name)
+    mixed = raw / "SYB68_246_202511_Mixed.csv"
+    lines = XR.read_bytes().split(b"\r\n")
+    lines[2] = lines[2].replace(b'"International Monetary Fund', b'"United Nations Population Division')
+    assert b"United Nations Population Division" in lines[2]
+    mixed.write_bytes(b"\r\n".join(lines))
+    files = {
+        IU.name: {"table": 314, "title": "Internet Usage", "encoding": "windows-1252"},
+        mixed.name: {"table": 246, "title": "Mixed", "encoding": "windows-1252"},
+    }
+    (raw / "MANIFEST.json").write_text(__import__("json").dumps({"files": files}))
+    monkeypatch.setattr(m, "RAW", tmp_path / "raw")
+    monkeypatch.setattr(m, "OUT", tmp_path / "parquet")
+    monkeypatch.setattr(m, "WORK", tmp_path / "work")
+    assert m.main() == 0
+    out = tmp_path / "parquet"
+    assert not (out / "syb68" / "314_internet_usage.parquet").exists()
+    con = duckdb.connect()
+    t = con.sql(
+        f"select table_number, parquet, rows, rows_published, rows_excluded "
+        f"from '{out / 'tables.parquet'}' order by table_number"
+    ).fetchall()
+    assert t == [(246, "parquet/syb68/246_mixed.parquet", 3, 1, 2),
+                 (314, None, 5, 0, 5)]  # fmt: skip
+    kept = con.sql(f"select source from '{out / 'syb68' / '246_mixed.parquet'}'").fetchall()
+    assert [m.source_status(s)[1] for (s,) in kept] == [True]
+    s = con.sql(
+        f"select agency, published, rows from '{out / 'sources.parquet'}' "
+        "where table_number = 314"
+    ).fetchall()
+    assert s == [("ITU", False, 5)]

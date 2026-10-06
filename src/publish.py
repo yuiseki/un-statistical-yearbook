@@ -7,6 +7,11 @@ file under data/parquet/ as a subset: '<edition>.<table>' for a table,
 'tables' and 'sources' for the two lists. A new edition is added beside the
 others.
 
+A raw CSV goes up only when every row of it is published: a table with any
+row left out for its originating agency's terms (rows_excluded in
+parquet/tables.parquet) keeps its raw file local. The manifests go up whole,
+so the withheld files stay listed with their hashes.
+
     uv run python src/publish.py             # dry run: list the files and their total size
     uv run python src/publish.py --push
 """
@@ -14,6 +19,7 @@ others.
 import argparse
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -35,6 +41,17 @@ def subset_entry(path: str) -> str:
     return f"- config_name: '{path.replace('/', '.')}'\n  data_files: parquet/{path}.parquet\n"
 
 
+def withheld(data: Path) -> set[str]:
+    """Raw files (relative to data/) of tables with any row left out of the Parquet."""
+    import duckdb
+
+    tables = data / "parquet" / "tables.parquet"
+    if not tables.exists():
+        raise SystemExit("no parquet/tables.parquet; run scripts/03_export_parquet.py")
+    rows = duckdb.sql(f"select raw from '{tables}' where rows_excluded > 0").fetchall()
+    return {r for (r,) in rows}
+
+
 def collect(data: Path) -> list[str]:
     """The files to upload, relative to data/; stops on anything the card or a manifest refutes."""
     card = (data / "README.md").read_text(encoding="utf-8")
@@ -47,9 +64,16 @@ def collect(data: Path) -> list[str]:
         if subset_entry(rel) not in card:
             raise SystemExit(f"the card does not declare the subset {rel.replace('/', '.')}")
         files.append(p.relative_to(data).as_posix())
+    for declared in re.findall(r"^  data_files: (parquet/\S+\.parquet)$", card, re.M):
+        if not (data / declared).exists():
+            name = declared.removeprefix("parquet/").removesuffix(".parquet").replace("/", ".")
+            raise SystemExit(f"the card declares the subset {name}, which has no Parquet")
+    hold = withheld(data)
     for mpath in sorted((data / "raw").glob("*/MANIFEST.json")):
         d = mpath.parent
         for name, m in json.loads(mpath.read_text())["files"].items():
+            if f"raw/{d.name}/{name}" in hold:
+                continue
             if sha256(d / name) != m["sha256"]:
                 raise SystemExit(f"raw/{d.name}/{name} is not the file in its manifest")
             files.append(f"raw/{d.name}/{name}")

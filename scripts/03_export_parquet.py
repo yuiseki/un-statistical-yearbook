@@ -31,6 +31,16 @@ stops the run with the file, the column and the value. Value is written with
 thousands separators ("1,030.5"); they are removed before the cast. An empty
 text cell is NULL. Rows keep the order of the CSV.
 
+Only rows whose originating agency (the Source column) allows redistribution
+under its own terms are written. UNdata lets its data be redistributed with
+citation, but it does not speak for the agencies it republishes, so each
+Source is matched against SOURCES below: the first pattern that matches
+names the agency and whether its rows are published. A Source that matches
+nothing is left out as unchecked, so a new agency in a new edition is never
+published by default. A table with no published rows gets no Parquet file.
+tables.parquet counts the published and excluded rows of every table, and
+sources.parquet gives each Source its agency, whether it is published and why.
+
     uv run python scripts/03_export_parquet.py
 """
 
@@ -58,6 +68,44 @@ PATTERNS = {
     "value": (r"-?([0-9]+|[0-9]{1,3}(,[0-9]{3})+)(\.[0-9]+)?", "a number"),
 }
 NUMBER_RE = PATTERNS["value"][0]
+# (pattern searched in Source, agency, published, reason); the first match wins,
+# so UN Comtrade comes before the rest of UNSD.
+SOURCES = [
+    (r"UN COMTRADE", "UN Comtrade", False,
+     "UN Comtrade: re-dissemination is limited and may need a distribution licence; "
+     "https://uncomtrade.org/docs/faqs-on-use-and-re-dissemination/"),
+    (r"World Health Organi[sz]ation", "WHO", False,
+     "WHO datasets are licensed for public health purposes only, and any other alteration "
+     "needs WHO's prior written authorization; "
+     "https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions"),
+    (r"International Telecommunication Union", "ITU", False,
+     "ITU content is for personal, educational or non-commercial use; distributing it or "
+     "any commercial use needs ITU's prior written permission; "
+     "https://www.itu.int/en/about/Pages/terms-of-use.aspx"),
+    (r"International Monetary Fund", "IMF", False,
+     "IMF data need permission for commercial reuse and for re-publishing a substantial "
+     "amount; https://www.imf.org/en/about/copyright-and-terms"),
+    (r"^United Nations Population Division", "UN Population Division", True,
+     "World Population and Urbanization Prospects are CC BY 3.0 IGO"),
+    (r"^United Nations Statistics Division", "UNSD", True,
+     "UNSD's own data under the UNdata terms of use"),
+    (r"^Food and Agriculture Organization", "FAO", True, "FAOSTAT is CC BY 4.0"),
+    (r"^International Labour Organization", "ILO", True, "ILOSTAT is CC BY 4.0"),
+    (r"^Organisation for Economic Co-operation and Development", "OECD", True,
+     "OECD terms allow reuse, including commercial, with attribution"),
+    (r"^United Nations High Commissioner for Refugees", "UNHCR", True,
+     "UNHCR population statistics are CC BY 4.0"),
+]  # fmt: skip
+
+
+def source_status(source: str | None) -> tuple[str, bool, str]:
+    """(agency, published, reason) for a Source value; unmatched sources are not published."""
+    for pattern, agency, published, reason in SOURCES:
+        if source and re.search(pattern, source):
+            return agency, published, reason
+    return "unchecked", False, "the originating agency's terms are not checked yet"
+
+
 COPY = "format parquet, compression zstd, write_bloom_filter false"
 
 
@@ -154,20 +202,31 @@ def main() -> int:
             names = column_names(read_header(utf8))
             stem = f"{e['table']}_{slug(e['title'])}"
             dest = out / f"{stem}.parquet"
-            con.execute(f"copy ({select_sql(utf8, names, name)}) to '{dest}' ({COPY})")
+            con.execute(f"create or replace temp table t as {select_sql(utf8, names, name)}")
             utf8.unlink()
             subset = f"{edition}.{stem}"
             counts = con.sql(
-                f"select source, count(*) from '{dest}' group by source order by 2 desc, 1"
+                "select source, count(*) from t group by source order by 2 desc, 1"
             ).fetchall()
+            status = {s: source_status(s) for s, _ in counts}
+            keep = [s for s, _ in counts if status[s][1]]
             n = sum(c for _, c in counts)
+            kept = sum(c for s, c in counts if status[s][1])
+            if keep:
+                con.execute(
+                    f"copy (select * from t where source in ?) to '{dest}' ({COPY})", [keep]
+                )
+            elif dest.exists():
+                dest.unlink()
             tables.append(
-                (edition, e["table"], subset, f"parquet/{edition}/{stem}.parquet",
+                (edition, e["table"], subset,
+                 f"parquet/{edition}/{stem}.parquet" if keep else None,
                  f"raw/{edition}/{name}", code, title, e.get("label"), e.get("topic"),
-                 e.get("month"), e.get("page_updated"), n, len(names), len(counts))
+                 e.get("month"), e.get("page_updated"), n, kept, n - kept, len(names),
+                 len(counts))
             )  # fmt: skip
-            sources += [(edition, e["table"], subset, s, c) for s, c in counts]
-            print(f"{subset}: {n:,} rows, {len(counts)} source(s), {dest.stat().st_size:,} bytes",
+            sources += [(edition, e["table"], subset, s, *status[s], c) for s, c in counts]
+            print(f"{subset}: {kept:,} of {n:,} rows published, {len(counts)} source(s)",
                   flush=True)  # fmt: skip
         work.rmdir()
 
@@ -175,14 +234,14 @@ def main() -> int:
         "create table tables (edition varchar, table_number integer, subset varchar, "
         "parquet varchar, raw varchar, table_code varchar, title varchar, page_label varchar, "
         "topic varchar, edition_month varchar, page_updated varchar, rows bigint, "
-        "columns integer, sources integer)"
+        "rows_published bigint, rows_excluded bigint, columns integer, sources integer)"
     )
-    con.executemany(f"insert into tables values ({', '.join(['?'] * 14)})", tables)
+    con.executemany(f"insert into tables values ({', '.join(['?'] * 16)})", tables)
     con.execute(
         "create table sources (edition varchar, table_number integer, subset varchar, "
-        "source varchar, rows bigint)"
+        "source varchar, agency varchar, published boolean, reason varchar, rows bigint)"
     )
-    con.executemany("insert into sources values (?, ?, ?, ?, ?)", sources)
+    con.executemany(f"insert into sources values ({', '.join(['?'] * 8)})", sources)
     con.execute(
         f"copy (select * from tables order by edition, table_number) "
         f"to '{OUT / 'tables.parquet'}' ({COPY})"
@@ -191,7 +250,9 @@ def main() -> int:
         f"copy (select * from sources order by edition, table_number, rows desc, source) "
         f"to '{OUT / 'sources.parquet'}' ({COPY})"
     )
-    print(f"tables.parquet: {len(tables)} tables; sources.parquet: {len(sources)} rows")
+    published = sum(1 for t in tables if t[3])
+    print(f"tables.parquet: {len(tables)} tables, {published} with published rows; "
+          f"sources.parquet: {len(sources)} rows")  # fmt: skip
     return 0
 
 
