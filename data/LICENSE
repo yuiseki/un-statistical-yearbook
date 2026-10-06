@@ -1,0 +1,61 @@
+UNdata Terms of Use
+https://data.un.org/Host.aspx?Content=UNdataUse
+
+Everything under this directory comes from the United Nations Statistical
+Yearbook tables that the United Nations Statistics Division (UNSD)
+publishes on UNdata at https://data.un.org/Default.aspx.
+
+The Terms and Conditions of use of UNdata (read on 2026-10-06) say:
+
+  Terms of Use
+
+  All data and metadata provided on UNdata’s website are available free of
+  charge and may be copied freely, duplicated and further distributed
+  provided that UNdata is cited as the reference.
+
+  Disclaimers
+
+  The data and metadata presented on UNdata are supplied as contained in
+  the source database without any addition, subtraction, amendment, or
+  modification by the United Nations Statistics Division.
+
+  Information about the quality or limitations of the data and metadata
+  should be obtained from the organization responsible for the source
+  database.
+
+The terms name no licence, and say nothing about commercial use or about
+modification and derived works.
+
+Each row of each table has a Source column naming the agency its value
+comes from (for example the International Telecommunication Union for
+internet use). The terms above do not mention those agencies' rights, and
+an agency's own terms may be stricter than UNdata's: on 2026-10-06 the
+ITU's site terms limited use to personal, educational or non-commercial
+purposes, the WHO licensed its datasets for public health purposes, UN
+Comtrade allowed internal use only without UNSD's permission, and the IMF
+required permission for commercial use. Check the Source of the rows you
+use and that agency's terms. The dataset card (README.md) lists the
+Source values of every table with their row counts.
+
+Cite UNdata as the reference, and the source named in each row.
+
+This dataset is not made or endorsed by the United Nations.
+
+The files under raw/<edition>/ are UNSD's own, byte for byte; each
+edition's MANIFEST.json records their URLs, sizes, sha256 and
+Last-Modified.
+
+The Parquet under parquet/ was made from those CSVs:
+
+  - each CSV was decoded from Windows-1252 and its text written as UTF-8
+  - its first row (the yearbook table code and title) was moved to
+    parquet/tables.parquet
+  - its columns were renamed (Region/Country/Area as area_code, the
+    unnamed column beside it as area, the others in snake case) and typed:
+    area_code and year as integers, value as a floating-point number with
+    its thousands separators removed, the rest as text; an empty text cell
+    is NULL
+  - parquet/tables.parquet lists the tables and parquet/sources.parquet
+    counts the rows per Source value per table
+
+No value was changed.

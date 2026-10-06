@@ -1,0 +1,499 @@
+# Where this data comes from and what was done to it.
+
+source:
+  name: United Nations Statistical Yearbook, tables in CSV ("Popular statistical tables")
+  publisher: United Nations Statistics Division (UNSD), Department of Economic and Social Affairs
+  page: https://data.un.org/Default.aspx
+  terms_of_use: https://data.un.org/Host.aspx?Content=UNdataUse
+  licence:
+    applied: UNdata Terms of Use (read 2026-10-06)
+    text: >-
+      All data and metadata provided on UNdata’s website are available free of
+      charge and may be copied freely, duplicated and further distributed
+      provided that UNdata is cited as the reference.
+    card: "license: other, license_name: undata-terms-of-use"
+    attribution_required: true
+    commercial_use: not mentioned in the terms
+    modification: not mentioned in the terms
+    originating_agencies: |
+      Every row has a Source column naming the agency the value comes from.
+      UNdata's terms do not mention those agencies' rights; their own terms
+      may differ. Found stricter (2026-10-06): ITU (non-commercial without
+      permission; table 314), WHO (public health purposes; tables 154, 325,
+      315, part of 246), UN Comtrade (no re-dissemination without UNSD's
+      permission; tables 123, 330), IMF (commercial use needs permission;
+      tables 125, 130). Not checked: IUCN, UNWTO, WIPO, IPU, UNODC.
+  encoding: windows-1252 (stated nowhere; every file decodes strictly as Windows-1252, not as UTF-8)
+  published_row_counts: none stated
+  not_included:
+    - the PDF version of each table (same tables laid out for print)
+    - editions the page does not link (e.g. SYB67); their names could only be guessed and the server refuses directory listings
+    - the printed Statistical Yearbook (PDF) on unstats.un.org
+
+editions:
+  syb68:
+    fetched: 2026-10-06
+    files: 32
+    bytes: 33575186
+    rows: 142861
+    tables:
+      "SYB68_1_202511_Population, Surface Area and Density.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_1_202511_Population%2C%20Surface%20Area%20and%20Density.csv"
+        bytes: 2124540
+        sha256: 9ef7ab141b20519c1a009ee6c678c3164e2741b57b785f23fd885df59dddfb9b
+        last_modified: "Tue, 24 Feb 2026 16:16:53 GMT"
+        page_label: "Population, surface area and density"
+        page_topic: "Population"
+        page_updated: "2-Mar-2026"
+        table_code: T02
+        subset: syb68.1_population_surface_area_and_density
+        rows: 7727
+        columns: 7
+        distinct_sources: 4
+      "SYB68_12_202511_Agricultural Index.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_12_202511_Agricultural%20Index.csv"
+        bytes: 687614
+        sha256: 58da6a5b7011cb16a48264f2b4ef2d48ad1531a0ca99758d363f9438552c740f
+        last_modified: "Mon, 02 Feb 2026 16:48:13 GMT"
+        page_label: "Agricultural production indices"
+        page_topic: "Price and production indices"
+        page_updated: "22-Dec-2025"
+        table_code: T20
+        subset: syb68.12_agricultural_index
+        rows: 3564
+        columns: 7
+        distinct_sources: 1
+      "SYB68_123_202511_Total Imports Exports and Balance of Trade.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_123_202511_Total%20Imports%20Exports%20and%20Balance%20of%20Trade.csv"
+        bytes: 1033920
+        sha256: b56312301d88303bc5a27ebf0414be921351adbeab09d5da89a03c4037770346
+        last_modified: "Mon, 02 Feb 2026 17:17:28 GMT"
+        page_label: "Total imports, exports and balance of trade"
+        page_topic: "International merchandise trade"
+        page_updated: "22-Dec-2025"
+        table_code: T21
+        subset: syb68.123_total_imports_exports_and_balance_of_trade
+        rows: 4995
+        columns: 9
+        distinct_sources: 1
+      "SYB68_125_202511_Balance of Payments.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_125_202511_Balance%20of%20Payments.csv"
+        bytes: 717438
+        sha256: 84790b54e2e6f0f5a09d510283133ce9476e7458902afd9e26251b34c7fc024b
+        last_modified: "Mon, 02 Feb 2026 16:50:08 GMT"
+        page_label: "Balance of payments"
+        page_topic: "Finance"
+        page_updated: "22-Dec-2025"
+        table_code: T15
+        subset: syb68.125_balance_of_payments
+        rows: 3305
+        columns: 7
+        distinct_sources: 1
+      "SYB68_128_202511_Consumer Price Index.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_128_202511_Consumer%20Price%20Index.csv"
+        bytes: 436460
+        sha256: 44062fa68bd15b3eea2f4093b994b8a1d611e874465379263c1940646e96d716
+        last_modified: "Mon, 02 Feb 2026 16:50:48 GMT"
+        page_label: "Consumer price indices"
+        page_topic: "Price and production indices"
+        page_updated: "22-Dec-2025"
+        table_code: T19
+        subset: syb68.128_consumer_price_index
+        rows: 2045
+        columns: 7
+        distinct_sources: 1
+      "SYB68_130_202511_Exchange Rates.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_130_202511_Exchange%20Rates.csv"
+        bytes: 1112180
+        sha256: b295ba734980c67cad060c891941ca5401273e2c27b397df4486d6b11c07bfc8
+        last_modified: "Mon, 02 Feb 2026 16:51:38 GMT"
+        page_label: "Exchange rates"
+        page_topic: "Finance"
+        page_updated: "22-Dec-2025"
+        table_code: T16
+        subset: syb68.130_exchange_rates
+        rows: 3516
+        columns: 9
+        distinct_sources: 1
+      "SYB68_145_202511_Land.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_145_202511_Land.csv"
+        bytes: 1264894
+        sha256: dd0b0417008002ea6697059624be8ade5d8e78c6e702ec1a61e02b6a81124ea7
+        last_modified: "Mon, 02 Feb 2026 17:19:34 GMT"
+        page_label: "Land"
+        page_topic: "Environment"
+        page_updated: "22-Dec-2025"
+        table_code: T24
+        subset: syb68.145_land
+        rows: 6297
+        columns: 7
+        distinct_sources: 2
+      "SYB68_153_202511_Gross Value Added by Economic Activity.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_153_202511_Gross%20Value%20Added%20by%20Economic%20Activity.csv"
+        bytes: 1348085
+        sha256: bd99b6d1681834a1415fcb7e9fb2cc17371b243ae48fd368575c3d5fac4b3dde
+        last_modified: "Mon, 02 Feb 2026 16:53:11 GMT"
+        page_label: "GVA by kind of economic activity"
+        page_topic: "National accounts"
+        page_updated: "22-Dec-2025"
+        table_code: T14
+        subset: syb68.153_gross_value_added_by_economic_activity
+        rows: 4432
+        columns: 7
+        distinct_sources: 1
+      "SYB68_154_202511_Health Personnel.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_154_202511_Health%20Personnel.csv"
+        bytes: 1205763
+        sha256: 1af1fb644058a6861b6d5e80b562b60838cbce6eabfa519b15d83488e6da5da2
+        last_modified: "Mon, 02 Feb 2026 16:53:48 GMT"
+        page_label: "Health personnel"
+        page_topic: "Nutrition and health"
+        page_updated: "22-Dec-2025"
+        table_code: T10
+        subset: syb68.154_health_personnel
+        rows: 6260
+        columns: 7
+        distinct_sources: 1
+      "SYB68_176_202511_Tourist-Visitors Arrival and Expenditure.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_176_202511_Tourist-Visitors%20Arrival%20and%20Expenditure.csv"
+        bytes: 420536
+        sha256: cacd8b6025522d4b007ca6a48be730a3cf65d4682520f51f90cf4c2e30ccc589
+        last_modified: "Mon, 02 Feb 2026 16:54:41 GMT"
+        page_label: "Tourist/visitor arrivals and tourism expenditure"
+        page_topic: "Tourism and transport"
+        page_updated: "22-Dec-2025"
+        table_code: T31
+        subset: syb68.176_tourist_visitors_arrival_and_expenditure
+        rows: 2154
+        columns: 9
+        distinct_sources: 1
+      "SYB68_200_202511_Employment.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_200_202511_Employment.csv"
+        bytes: 1967009
+        sha256: 7a5acfbeb6ac3868db3a0c19166475285d8757ed77bac8c4e75c28c3aee487fa
+        last_modified: "Mon, 02 Feb 2026 16:55:29 GMT"
+        page_label: "Employment by economic activity"
+        page_topic: "Labour market"
+        page_updated: "22-Dec-2025"
+        table_code: T18
+        subset: syb68.200_employment
+        rows: 8037
+        columns: 7
+        distinct_sources: 1
+      "SYB68_223_202511_Net Disbursements from Official ODA from Donors.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_223_202511_Net%20Disbursements%20from%20Official%20ODA%20from%20Donors.csv"
+        bytes: 205703
+        sha256: 01ec606dd413d08ab047970eef60da61a796f774d726d3ca385c5e1afcad9a0a
+        last_modified: "Mon, 02 Feb 2026 16:56:20 GMT"
+        page_label: "Net disbursements of official development assistance from donors"
+        page_topic: "Development Assistance"
+        page_updated: "22-Dec-2025"
+        table_code: T33
+        subset: syb68.223_net_disbursements_from_official_oda_from_donors
+        rows: 632
+        columns: 7
+        distinct_sources: 1
+      "SYB68_226_202511_Net Disbursements from Official ODA to Recipients.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_226_202511_Net%20Disbursements%20from%20Official%20ODA%20to%20Recipients.csv"
+        bytes: 1382990
+        sha256: 4cfe327063f0cc0f66c18be694e6abf144cacdd44f56bab07ae805dd0c2e20da
+        last_modified: "Mon, 02 Feb 2026 16:57:02 GMT"
+        page_label: "Net disbursements of official development assistance to recipients"
+        page_topic: "Development Assistance"
+        page_updated: "22-Dec-2025"
+        table_code: T32
+        subset: syb68.226_net_disbursements_from_official_oda_to_recipients
+        rows: 5199
+        columns: 7
+        distinct_sources: 1
+      "SYB68_230_202511_GDP and GDP Per Capita.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_230_202511_GDP%20and%20GDP%20Per%20Capita.csv"
+        bytes: 1511486
+        sha256: 8091d7ba3b94ad60477a66cd41fd7b0a1dd1cafd5014ccda74f6c6032e9da9ac
+        last_modified: "Mon, 02 Feb 2026 17:21:12 GMT"
+        page_label: "GDP and GDP per capita"
+        page_topic: "National accounts"
+        page_updated: "22-Dec-2025"
+        table_code: T13
+        subset: syb68.230_gdp_and_gdp_per_capita
+        rows: 6768
+        columns: 7
+        distinct_sources: 1
+      "SYB68_245_202511_Public expenditure on education and access to computers.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_245_202511_Public%20expenditure%20on%20education%20and%20access%20to%20computers.csv"
+        bytes: 655206
+        sha256: 0e75891d040f55dd1e8375ea4c60599927b1f329ee4d25c1937e35e97a302fd9
+        last_modified: "Mon, 02 Feb 2026 16:59:19 GMT"
+        page_label: "Public expenditure on education"
+        page_topic: "Education"
+        page_updated: "22-Dec-2025"
+        table_code: T09
+        subset: syb68.245_public_expenditure_on_education_and_access_to_computers
+        rows: 2365
+        columns: 7
+        distinct_sources: 1
+      "SYB68_246_202511_Population Growth, Fertility and Mortality Indicators.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_246_202511_Population%20Growth%2C%20Fertility%20and%20Mortality%20Indicators.csv"
+        bytes: 2137820
+        sha256: b85b46521394b34366e71360173eed2974f51b54b625b8040e640d055437de9d
+        last_modified: "Tue, 24 Feb 2026 16:16:53 GMT"
+        page_label: "Population growth, fertility, life expectancy and mortality"
+        page_topic: "Population"
+        page_updated: "2-Mar-2026"
+        table_code: T03
+        subset: syb68.246_population_growth_fertility_and_mortality_indicators
+        rows: 7161
+        columns: 7
+        distinct_sources: 4
+      "SYB68_263_202511_Production, Trade and Supply of Energy.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_263_202511_Production%2C%20Trade%20and%20Supply%20of%20Energy.csv"
+        bytes: 1565488
+        sha256: 425460565f23d953116e9233a3548d6e51ee2d4b14bc3348e6886aee3119ece2
+        last_modified: "Mon, 02 Feb 2026 17:01:13 GMT"
+        page_label: "Energy production, trade and consumption"
+        page_topic: "Energy"
+        page_updated: "22-Dec-2025"
+        table_code: T23
+        subset: syb68.263_production_trade_and_supply_of_energy
+        rows: 8700
+        columns: 7
+        distinct_sources: 1
+      "SYB68_264_202511_Patents.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_264_202511_Patents.csv"
+        bytes: 339975
+        sha256: bf6dc5ec5c5e37a0c045d8c80ed733b9dc542128b47886050cc0c2c5fa98815a
+        last_modified: "Mon, 02 Feb 2026 17:01:51 GMT"
+        page_label: "Patents"
+        page_topic: "Science and technology"
+        page_updated: "22-Dec-2025"
+        table_code: T29
+        subset: syb68.264_patents
+        rows: 1973
+        columns: 7
+        distinct_sources: 1
+      "SYB68_285_202511_Research and Development Expenditure and Staff.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_285_202511_Research%20and%20Development%20Expenditure%20and%20Staff.csv"
+        bytes: 281272
+        sha256: ad77a1e9bc90d5ef7794c080479dbf3e252af3ace2d5680e6a0471a77fde5b5f
+        last_modified: "Mon, 02 Feb 2026 17:02:26 GMT"
+        page_label: "Human resources in R & D"
+        page_topic: "Science and technology"
+        page_updated: "22-Dec-2025"
+        table_code: T28
+        subset: syb68.285_research_and_development_expenditure_and_staff
+        rows: 1039
+        columns: 7
+        distinct_sources: 1
+      "SYB68_309_202511_Education.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_309_202511_Education.csv"
+        bytes: 2042991
+        sha256: b4f55b021f602064164808884bc5778c9ed0e39f2afbaea390ce497aec01f659
+        last_modified: "Mon, 02 Feb 2026 17:03:04 GMT"
+        page_label: "Education at the primary, secondary and tertiary levels"
+        page_topic: "Education"
+        page_updated: "22-Dec-2025"
+        table_code: T07
+        subset: syb68.309_education
+        rows: 7934
+        columns: 7
+        distinct_sources: 1
+      "SYB68_310_202511_Carbon Dioxide Emission Estimates.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_310_202511_Carbon%20Dioxide%20Emission%20Estimates.csv"
+        bytes: 654809
+        sha256: 1013ff768ecdcec615bf6a37a1705d7cfa8b1e3b2fc60dfbfa3020a6ad8d3945
+        last_modified: "Mon, 02 Feb 2026 17:23:40 GMT"
+        page_label: "CO2 emissions estimates"
+        page_topic: "Environment"
+        page_updated: "22-Dec-2025"
+        table_code: T26
+        subset: syb68.310_carbon_dioxide_emission_estimates
+        rows: 3488
+        columns: 7
+        distinct_sources: 1
+      "SYB68_313_202511_Threatened Species.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_313_202511_Threatened%20Species.csv"
+        bytes: 1356589
+        sha256: fb1ada90fe402b95b0dedb40718fbf5aac8938f940aeac7a0260680187f4a180
+        last_modified: "Mon, 02 Feb 2026 17:04:14 GMT"
+        page_label: "Threatened species"
+        page_topic: "Environment"
+        page_updated: "22-Dec-2025"
+        table_code: T25
+        subset: syb68.313_threatened_species
+        rows: 6916
+        columns: 7
+        distinct_sources: 1
+      "SYB68_314_202511_Internet Usage.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_314_202511_Internet%20Usage.csv"
+        bytes: 288287
+        sha256: 83ad752aa0b0f428e993c41859d12bab57b55d944c2dee36b0a408d4685e6b60
+        last_modified: "Mon, 02 Feb 2026 17:04:47 GMT"
+        page_label: "Internet usage"
+        page_topic: "Communication"
+        page_updated: "22-Dec-2025"
+        table_code: T30
+        subset: syb68.314_internet_usage
+        rows: 1520
+        columns: 7
+        distinct_sources: 1
+      "SYB68_315_202511_Water and Sanitation Services.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_315_202511_Water%20and%20Sanitation%20Services.csv"
+        bytes: 1124213
+        sha256: 9c9ddd07f51ab6b630f1d91255e9eecf76fa94c2dc45a979179cf61b9515da56
+        last_modified: "Mon, 02 Feb 2026 17:09:09 GMT"
+        page_label: "Water supply and sanitation coverage"
+        page_topic: "Environment"
+        page_updated: "22-Dec-2025"
+        table_code: T27
+        subset: syb68.315_water_and_sanitation_services
+        rows: 3519
+        columns: 7
+        distinct_sources: 1
+      "SYB68_317_202511_Seats held by women in Parliament.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_317_202511_Seats%20held%20by%20women%20in%20Parliament.csv"
+        bytes: 476717
+        sha256: 687d8ed2b9dd1f214dd32f4b61f42f4185edce3bd3e967ceb51d211c7e95f9bf
+        last_modified: "Mon, 02 Feb 2026 17:09:45 GMT"
+        page_label: "Seats held by women in national parliament"
+        page_topic: "Gender"
+        page_updated: "22-Dec-2025"
+        table_code: T05
+        subset: syb68.317_seats_held_by_women_in_parliament
+        rows: 1952
+        columns: 9
+        distinct_sources: 1
+      "SYB68_319_202511_Ratio of girls to boys in education.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_319_202511_Ratio%20of%20girls%20to%20boys%20in%20education.csv"
+        bytes: 854504
+        sha256: 80e2de0b91193b2e191ee2b387e149dc3bd386fa5674d033338e5424b025e953
+        last_modified: "Mon, 02 Feb 2026 17:10:20 GMT"
+        page_label: "Ratio of girls to boys in primary, secondary and tertiary levels"
+        page_topic: "Gender"
+        page_updated: "22-Dec-2025"
+        table_code: T06
+        subset: syb68.319_ratio_of_girls_to_boys_in_education
+        rows: 3347
+        columns: 7
+        distinct_sources: 1
+      "SYB68_323_202511_Teaching Staff in education.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_323_202511_Teaching%20Staff%20in%20education.csv"
+        bytes: 916968
+        sha256: 517d40a35fdfad8e41f3b95dca94d501e4f265d043e0e41eada553a647dad5f4
+        last_modified: "Mon, 02 Feb 2026 17:26:04 GMT"
+        page_label: "Teaching staff at the primary, secondary and tertiary levels"
+        page_topic: "Education"
+        page_updated: "22-Dec-2025"
+        table_code: T08
+        subset: syb68.323_teaching_staff_in_education
+        rows: 3685
+        columns: 7
+        distinct_sources: 1
+      "SYB68_325_202511_Expenditure on health.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_325_202511_Expenditure%20on%20health.csv"
+        bytes: 582194
+        sha256: 0bb71cd9167567e7dd995c5755b7c10691698f3c9664796bb38244d99b0ea570
+        last_modified: "Mon, 02 Feb 2026 17:11:37 GMT"
+        page_label: "Health expenditure"
+        page_topic: "Nutrition and health"
+        page_updated: "22-Dec-2025"
+        table_code: T11
+        subset: syb68.325_expenditure_on_health
+        rows: 2292
+        columns: 7
+        distinct_sources: 1
+      "SYB68_327_202511_International Migrants and Refugees.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_327_202511_International%20Migrants%20and%20Refugees.csv"
+        bytes: 1742050
+        sha256: 68eeea05b363735aa12e7840143d7a26fa3bc844243a029d0d4d6575e77c0895
+        last_modified: "Mon, 02 Feb 2026 17:26:47 GMT"
+        page_label: "International migrants and refugees"
+        page_topic: "Population"
+        page_updated: "22-Dec-2025"
+        table_code: T04
+        subset: syb68.327_international_migrants_and_refugees
+        rows: 6966
+        columns: 7
+        distinct_sources: 2
+      "SYB68_328_202511_Intentional homicides and other crimes.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_328_202511_Intentional%20homicides%20and%20other%20crimes.csv"
+        bytes: 1173091
+        sha256: 279f17a9687bee7a889882c2be9fcdecbe84793b7eb38d2c4ee329efa9e5bd29
+        last_modified: "Mon, 02 Feb 2026 17:13:01 GMT"
+        page_label: "Intentional homicides and other crimes"
+        page_topic: "Crime"
+        page_updated: "22-Dec-2025"
+        table_code: T12
+        subset: syb68.328_intentional_homicides_and_other_crimes
+        rows: 6046
+        columns: 7
+        distinct_sources: 1
+      "SYB68_329_202511_Labour Force and Unemployment.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_329_202511_Labour%20Force%20and%20Unemployment.csv"
+        bytes: 1233873
+        sha256: 0ebfea07f2cef6251eb5df69fd84f87e6b9d92a9a7782b0c71e5b2ee5ca023eb
+        last_modified: "Mon, 02 Feb 2026 17:14:51 GMT"
+        page_label: "Labour force and unemployment"
+        page_topic: "Labour market"
+        page_updated: "22-Dec-2025"
+        table_code: T17
+        subset: syb68.329_labour_force_and_unemployment
+        rows: 5486
+        columns: 7
+        distinct_sources: 1
+      "SYB68_330_202511_Major Trading Partners.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB68_330_202511_Major%20Trading%20Partners.csv"
+        bytes: 730521
+        sha256: 6407505b89651b0cb872b0717379379164d8a2349cf586351024b6ee4d9ebb69
+        last_modified: "Mon, 02 Feb 2026 17:15:36 GMT"
+        page_label: "Major Trading Partners"
+        page_topic: "International merchandise trade"
+        page_updated: "22-Dec-2025"
+        table_code: T22
+        subset: syb68.330_major_trading_partners
+        rows: 3541
+        columns: 9
+        distinct_sources: 1
+  syb61:
+    fetched: 2026-10-06
+    files: 1
+    bytes: 974684
+    rows: 4165
+    tables:
+      "SYB61_253_Population Growth Rates in Urban areas and Capital cities.csv":
+        url: "https://data.un.org/_Docs/SYB/CSV/SYB61_253_Population%20Growth%20Rates%20in%20Urban%20areas%20and%20Capital%20cities.csv"
+        bytes: 974684
+        sha256: 24398bd24326d78aa0c1e4b5334f0a9bc1818372be1c865cdb8a646d3bef09be
+        last_modified: "Fri, 31 Aug 2018 16:38:23 GMT"
+        page_label: "Population in the capital city, urban and rural areas"
+        page_topic: "Population"
+        page_updated: null
+        table_code: T03
+        subset: syb61.253_population_growth_rates_in_urban_areas_and_capital_cities
+        rows: 4165
+        columns: 9
+        distinct_sources: 1
+
+lists:
+  tables: {file: parquet/tables.parquet, rows: 33}
+  sources: {file: parquet/sources.parquet, rows: 41}
+
+checked:
+  note: scripts/02_verify.py, with Python's csv module and DuckDB, before upload
+  items:
+    - every raw file against its edition's MANIFEST.json (size and sha256)
+    - every CSV decodes strictly as Windows-1252; every record has as many cells as its header (147,026 records)
+    - every table's Parquet has the CSV's record count and the expected column names in order, each of the type its name gives
+    - every cell of every Parquet equals the CSV's, row by row
+    - tables.parquet row counts and sources.parquet Source counts as counted in the CSVs
+    - a DuckDB without extension autoloading opens every file
+    - no bloom filters
+
+modifications:
+  raw: none. UNSD's files, byte for byte.
+  parquet:
+    - each CSV decoded from Windows-1252, text written as UTF-8
+    - the title row (yearbook table code and title) moved to tables.parquet
+    - columns renamed (Region/Country/Area -> area_code, the unnamed column -> area, others in snake case)
+    - area_code and year INTEGER, value DOUBLE with thousands separators removed, the rest text; checked by regular expression, a mismatch stops the build; empty text NULL
+    - rows in the order of the CSV
+    - written with zstd, without bloom filters
